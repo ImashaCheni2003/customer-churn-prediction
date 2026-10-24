@@ -486,8 +486,7 @@ print(confusion_matrix(y_test, rf_final_predictions))
 # ================= MODEL COMPARISON =================
 
 # Logistic Regression test probabilities and predictions
-lr_test_probabilities = logistic_regression.predict_proba(X_test)[:, 1]
-
+lr_test_probabilities = model.predict_proba(X_test)[:, 1]
 lr_default_predictions = (
     lr_test_probabilities >= 0.50
 ).astype(int)
@@ -600,58 +599,3 @@ print("Saved updated chart to reports/figures/model_performance_comparison.png")
 
 
 
-# ============== MODEL PERFORMANCE CHART ==============
-
-import matplotlib.pyplot as plt
-
-labels = [
-    "Logistic Regression (0.50)",
-    "Logistic Regression (0.30)",
-    "Random Forest (0.50)",
-    "Random Forest (0.40)"
-]
-
-f1_scores = comparison["F1_Score"].tolist()
-recall_scores = comparison["Recall"].tolist()
-
-x = range(len(labels))
-width = 0.35
-
-fig, ax = plt.subplots(figsize=(11, 6))
-
-ax.bar(
-    [i - width / 2 for i in x],
-    f1_scores,
-    width,
-    label="F1-score"
-)
-
-ax.bar(
-    [i + width / 2 for i in x],
-    recall_scores,
-    width,
-    label="Recall"
-)
-
-ax.set_ylabel("Score")
-ax.set_title("Customer Churn Model Performance Comparison")
-ax.set_xticks(list(x))
-ax.set_xticklabels(labels, rotation=15, ha="right")
-ax.set_ylim(0, 1)
-ax.legend()
-ax.grid(axis="y", linestyle="--", alpha=0.3)
-
-plt.tight_layout()
-
-figure_dir = Path("reports/figures")
-figure_dir.mkdir(parents=True, exist_ok=True)
-
-plt.savefig(
-    figure_dir / "model_performance_comparison.png",
-    dpi=300,
-    bbox_inches="tight"
-)
-
-plt.close()
-
-print("Saved: reports/figures/model_performance_comparison.png")

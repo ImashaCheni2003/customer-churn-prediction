@@ -1,56 +1,81 @@
 # Customer Churn Prediction
 
-A machine learning project exploring customer churn in the telecommunications industry using exploratory data analysis, Logistic Regression, and Random Forest.
+A machine learning project that explores customer churn in the telecommunications industry using Python, exploratory data analysis (EDA), Logistic Regression, and Random Forest.
 
-**Repository:** [GitHub](https://github.com/ImashaCheni2003/customer-churn-prediction)
+**Repository:** [Customer Churn Prediction on GitHub](https://github.com/ImashaCheni2003/customer-churn-prediction)
+
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Objectives](#objectives)
+- [Technologies](#technologies)
+- [Dataset](#dataset)
+- [Key Findings](#key-findings)
+- [Exploratory Data Analysis](#exploratory-data-analysis)
+- [Machine Learning Models](#machine-learning-models)
+- [Model Performance](#model-performance)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
+- [Future Improvements](#future-improvements)
+- [Skills Demonstrated](#skills-demonstrated)
 
 ## Project Overview
 
-Customer churn occurs when customers stop using a company's services. Identifying patterns associated with churn can help businesses better understand customer behaviour and develop retention strategies.
+Customer churn occurs when customers discontinue a company's services. Understanding the patterns associated with churn can help businesses identify customers who may be at risk and develop more informed retention strategies.
 
-This project analyses the IBM Telco Customer Churn dataset, explores factors associated with customer churn, and compares machine learning classifiers using multiple evaluation metrics.
+This project analyses the IBM Telco Customer Churn dataset, investigates customer behaviour and billing patterns, and compares two classification algorithms for predicting customer churn.
 
-## Project Objectives
+The project also examines how classification thresholds affect the balance between identifying customers who churn and incorrectly flagging customers who stay.
+
+## Objectives
 
 - Clean and prepare customer data for analysis.
 - Explore churn patterns across contracts, tenure, billing, and payment methods.
-- Build and evaluate classification models.
-- Compare model performance using accuracy, precision, recall, F1-score, and ROC-AUC.
-- Investigate how classification thresholds affect churn detection.
+- Build classification models using Logistic Regression and Random Forest.
+- Evaluate models using accuracy, precision, recall, F1-score, and ROC-AUC.
+- Investigate the impact of classification thresholds on churn detection.
+- Communicate findings that may support customer retention decisions.
 
-## Technologies Used
+## Technologies
 
-- **Language:** Python
-- **Data analysis:** Pandas
-- **Visualisation:** Matplotlib
-- **Machine learning:** Scikit-learn
-- **Development environment:** Visual Studio Code
-- **Version control:** Git and GitHub
+| Category | Tools |
+|---|---|
+| Programming language | Python |
+| Data analysis | Pandas |
+| Data visualisation | Matplotlib |
+| Machine learning | Scikit-learn |
+| Development environment | Visual Studio Code |
+| Version control | Git and GitHub |
 
 ## Dataset
 
-The project uses the IBM Telco Customer Churn dataset, which originally contains 7,043 customer records and 21 columns.
+The project uses the IBM Telco Customer Churn dataset, containing 7,043 customer records and 21 columns.
 
-During preprocessing, 11 records with invalid or missing `TotalCharges` values were removed, leaving **7,032 records** for analysis.
+During preprocessing, 11 records with blank or invalid `TotalCharges` values were removed, leaving **7,032 records** for analysis.
 
-The target variable is `Churn`, which indicates whether a customer left the service (`Yes`) or remained (`No`).
+The target variable is `Churn`:
+
+- `Yes` — the customer left the service.
+- `No` — the customer remained with the service.
+
+The dataset contains customer demographics, account information, subscribed services, contract types, and billing details.
 
 ## Key Findings
 
-- **Contract type:** Month-to-month customers had a churn rate of 42.71%, compared with 11.28% for one-year contracts and 2.85% for two-year contracts.
+- **Contract type:** Month-to-month customers had an observed churn rate of 42.71%, compared with 11.28% for one-year contracts and 2.85% for two-year contracts.
 - **Customer tenure:** Customers who churned had an average tenure of approximately 18 months, compared with 38 months for customers who stayed.
-- **Monthly charges:** Customers who churned had higher average monthly charges (74.44) than customers who stayed (61.31), in the dataset's recorded monetary units.
-- **Payment method:** Electronic-check users had the highest observed churn rate, at 45.29%.
+- **Monthly charges:** Customers who churned had average monthly charges of 74.44, compared with 61.31 for customers who stayed, in the dataset's recorded monetary units.
+- **Payment method:** Customers using electronic checks had the highest observed churn rate, at 45.29%.
 
-These are observed associations, not evidence that any individual factor directly causes churn.
+These findings describe associations in the dataset; they do not establish that any particular factor causes customer churn.
 
 ## Exploratory Data Analysis
 
-### Churn Distribution
+### Customer Churn Distribution
 
 ![Customer churn distribution](reports/figures/churn_distribution.png)
 
-### Churn by Contract Type
+### Churn Rate by Contract Type
 
 ![Churn rate by contract type](reports/figures/churn_by_contract.png)
 
@@ -60,16 +85,21 @@ These are observed associations, not evidence that any individual factor directl
 
 ## Machine Learning Models
 
-Two classification algorithms were evaluated:
+Two classification algorithms were evaluated.
 
-1. **Logistic Regression** — a baseline model for estimating churn probabilities.
-2. **Random Forest** — an ensemble classifier configured with 300 trees, a maximum depth of 12, a minimum leaf size of 3, and balanced class weights.
+**1. Logistic Regression**
 
-Different classification thresholds were examined to investigate the trade-off between identifying churners and generating false-positive predictions.
+Used as a baseline classifier to estimate customer churn probabilities.
+
+**2. Random Forest**
+
+An ensemble classifier configured with 300 trees, a maximum depth of 12, a minimum leaf size of 3, and balanced class weights.
+
+Different classification thresholds were explored to understand how changing the decision boundary affects churn detection and false-positive predictions.
 
 ## Model Performance
 
-The following results were recorded across four model and threshold experiments.
+The following results were recorded across four model and threshold configurations.
 
 | Model | Threshold | Accuracy | Precision | Recall | F1-score | ROC-AUC |
 |---|---:|---:|---:|---:|---:|---:|
@@ -78,16 +108,60 @@ The following results were recorded across four model and threshold experiments.
 | Random Forest | 0.50 | 76.97% | 55.12% | 71.93% | **62.41%** | 83.07% |
 | Random Forest | 0.40 | 73.21% | 49.75% | **81.02%** | 61.65% | 83.07% |
 
+### Model Comparison
+
 ![Model performance comparison](reports/figures/model_performance_comparison.png)
 
 ### Interpretation
 
-- Random Forest at a threshold of 0.50 achieved the highest F1-score among the four experiments.
-- Random Forest at a threshold of 0.40 achieved the highest recall, identifying 303 of the 374 churners in the test set.
-- Lower thresholds can identify more potential churners, but typically increase false positives.
-- The preferred model depends on the business objective and the relative costs of missed churners and unnecessary retention interventions.
+- **Highest accuracy:** Logistic Regression at a threshold of 0.50 achieved 80.38% accuracy.
+- **Highest F1-score:** Random Forest at a threshold of 0.50 achieved an F1-score of 62.41% among the four experiments.
+- **Highest recall:** Random Forest at a threshold of 0.40 achieved 81.02% recall, identifying 303 of the 374 customers who churned in the test set.
+- **Threshold trade-off:** Lower thresholds can identify more potential churners, but may also increase false-positive predictions.
 
-**Evaluation limitation:** These results are exploratory comparisons because multiple configurations were evaluated on the same test set. They should not be presented as a final independent performance estimate. A stronger final evaluation would select the model and threshold using training/validation data, then evaluate the selected configuration on an untouched test set.
+The most appropriate configuration depends on the business objective. For example, a company prioritising the detection of potential churners may prefer higher recall, whereas a company with limited retention resources may place greater emphasis on precision and intervention costs.
+
+**Evaluation limitation:** Multiple model and threshold configurations were evaluated on the same test set. Consequently, these results should be treated as exploratory comparisons rather than an independent final performance estimate. A stronger evaluation would use training and validation data for model selection and threshold tuning, followed by a single evaluation on an untouched test set.
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10 or a compatible Python version
+- Git
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/ImashaCheni2003/customer-churn-prediction.git
+cd customer-churn-prediction
+```
+
+### 2. Create a virtual environment
+
+```powershell
+python -m venv .venv
+```
+
+Activate it on Windows PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+### 3. Install dependencies
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+### 4. Run the analysis
+
+```bash
+python churn_analysis.py
+```
+
+The script performs data preparation, exploratory analysis, model training, threshold experiments, and model evaluation. Generated figures and comparison results are saved under the `reports/` directory.
 
 ## Project Structure
 
@@ -104,59 +178,23 @@ customer-churn-prediction/
 │   └── tables/
 │       └── model_comparison.csv
 ├── churn_analysis.py
+├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
-## Getting Started
-
-### Prerequisites
-
-- Python 3.10 or a compatible Python version
-- Git
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/ImashaCheni2003/customer-churn-prediction.git
-cd customer-churn-prediction
-```
-
-### 2. Create and activate a virtual environment
-
-On Windows PowerShell:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-### 3. Install dependencies
-
-```bash
-python -m pip install pandas matplotlib scikit-learn
-```
-
-### 4. Run the analysis
-
-```bash
-python churn_analysis.py
-```
-
-The script runs the data preparation, exploratory analysis, model training, and evaluation workflow. Generated figures and comparison results are saved under `reports/`.
-
 ## Future Improvements
 
-- Introduce cross-validation and a dedicated validation set for model selection.
-- Perform final evaluation on an untouched test set.
+- Use cross-validation and a dedicated validation set for model selection.
+- Reserve an untouched test set for final evaluation.
 - Investigate feature importance and model explainability.
 - Explore additional classification algorithms and systematic hyperparameter tuning.
-- Evaluate business-oriented metrics, such as the potential costs of missed churners and false positives.
+- Evaluate business-oriented costs associated with missed churners and false-positive predictions.
 - Develop an interactive application for demonstrating churn predictions.
 
 ## Skills Demonstrated
 
-Data cleaning, exploratory data analysis, data visualisation, feature preprocessing, classification, model evaluation, threshold analysis, Python programming, and version control with Git.
+Python programming, data cleaning, exploratory data analysis, data visualisation, feature preprocessing, classification, model evaluation, threshold analysis, and version control with Git and GitHub.
 
 ## Disclaimer
 

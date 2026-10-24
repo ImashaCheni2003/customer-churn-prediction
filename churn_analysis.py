@@ -485,43 +485,63 @@ print(confusion_matrix(y_test, rf_final_predictions))
 
 # ================= MODEL COMPARISON =================
 
-comparison = pd.DataFrame([
-    {
-        "Model": "Logistic Regression",
-        "Threshold": 0.50,
-        "Accuracy": 0.8038,
-        "Precision": 0.6485,
-        "Recall": 0.5722,
-        "F1_Score": 0.6080,
-        "ROC_AUC": 0.8359
-    },
-    {
-        "Model": "Logistic Regression",
-        "Threshold": 0.30,
-        "Accuracy": 0.7427,
-        "Precision": 0.5108,
-        "Recall": 0.7594,
-        "F1_Score": 0.6108,
-        "ROC_AUC": 0.8359
-    },
-    {
-        "Model": "Random Forest",
-        "Threshold": 0.50,
-        "Accuracy": 0.7697,
-        "Precision": 0.5512,
-        "Recall": 0.7193,
-        "F1_Score": 0.6241,
-        "ROC_AUC": 0.8307
-    },
-    {
-        "Model": "Random Forest",
-        "Threshold": 0.40,
-        "Accuracy": 0.7321,
-        "Precision": 0.4975,
-        "Recall": 0.8102,
-        "F1_Score": 0.6165,
-        "ROC_AUC": 0.8307
+# Logistic Regression test probabilities and predictions
+lr_test_probabilities = logistic_regression.predict_proba(X_test)[:, 1]
+
+lr_default_predictions = (
+    lr_test_probabilities >= 0.50
+).astype(int)
+
+lr_selected_threshold = 0.30
+lr_selected_predictions = (
+    lr_test_probabilities >= lr_selected_threshold
+).astype(int)
+
+# Random Forest test probabilities and predictions
+rf_default_predictions = (
+    rf_test_probabilities >= 0.50
+).astype(int)
+
+rf_selected_predictions = (
+    rf_test_probabilities >= rf_selected_threshold
+).astype(int)
+
+
+def calculate_metrics(model_name, threshold, y_true, predictions, probabilities):
+    return {
+        "Model": model_name,
+        "Threshold": threshold,
+        "Accuracy": accuracy_score(y_true, predictions),
+        "Precision": precision_score(
+            y_true, predictions, zero_division=0
+        ),
+        "Recall": recall_score(
+            y_true, predictions, zero_division=0
+        ),
+        "F1_Score": f1_score(
+            y_true, predictions, zero_division=0
+        ),
+        "ROC_AUC": roc_auc_score(y_true, probabilities)
     }
+
+
+comparison = pd.DataFrame([
+    calculate_metrics(
+        "Logistic Regression", 0.50, y_test,
+        lr_default_predictions, lr_test_probabilities
+    ),
+    calculate_metrics(
+        "Logistic Regression", lr_selected_threshold, y_test,
+        lr_selected_predictions, lr_test_probabilities
+    ),
+    calculate_metrics(
+        "Random Forest", 0.50, y_test,
+        rf_default_predictions, rf_test_probabilities
+    ),
+    calculate_metrics(
+        "Random Forest", rf_selected_threshold, y_test,
+        rf_selected_predictions, rf_test_probabilities
+    )
 ])
 
 output_dir = Path("reports/tables")
@@ -529,12 +549,55 @@ output_dir.mkdir(parents=True, exist_ok=True)
 
 comparison.to_csv(
     output_dir / "model_comparison.csv",
-    index=False
+    index=False,
+    float_format="%.4f"
 )
 
 print("\n========== MODEL COMPARISON ==========")
 print(comparison.round(4).to_string(index=False))
-print("\nSaved: reports/tables/model_comparison.csv")
+print("\nSaved model comparison to reports/tables/model_comparison.csv")
+
+
+# ================= MODEL PERFORMANCE CHART =================
+
+import matplotlib.pyplot as plt
+
+figures_dir = Path("reports/figures")
+figures_dir.mkdir(parents=True, exist_ok=True)
+
+chart_data = comparison.copy()
+chart_data["Model and Threshold"] = (
+    chart_data["Model"]
+    + " ("
+    + chart_data["Threshold"].map(lambda x: f"{x:.2f}")
+    + ")"
+)
+
+metrics_to_plot = ["Accuracy", "Precision", "Recall", "F1_Score", "ROC_AUC"]
+
+ax = chart_data.set_index("Model and Threshold")[metrics_to_plot].plot(
+    kind="bar",
+    figsize=(12, 6),
+    ylim=(0, 1),
+    rot=15
+)
+
+ax.set_title("Model Performance Comparison")
+ax.set_ylabel("Score")
+ax.set_xlabel("Model (decision threshold)")
+ax.legend(title="Metric")
+ax.grid(axis="y", alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(
+    figures_dir / "model_performance_comparison.png",
+    dpi=300,
+    bbox_inches="tight"
+)
+plt.close()
+
+print("Saved updated chart to reports/figures/model_performance_comparison.png")
+
 
 
 # ============== MODEL PERFORMANCE CHART ==============
